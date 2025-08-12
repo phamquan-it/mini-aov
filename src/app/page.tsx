@@ -1,103 +1,109 @@
-import Image from "next/image";
+"use client";
+import React, { useState, useEffect, useRef } from "react";
+import Terrain from "@/maps/terrain";
+import MapWrapper from "@/MapWrapper";
+import { positionAtTime } from "@/utils";
+import SvgPlayer from "@/SvgPlayer";
+import { NakSVGInline } from "@/heros/Nakroth";
+import { MuradSVGInline } from "@/heros/murad";
+import { endPos, speed as soldierSpeed, startPos } from "@/constants";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/redux/store";
+import AOVSettingsDropdown from "@/components/AOVSettingsDropdown";
+import useHeroesStore from "@/lib/features/heroes/useHeroesStore";
+import hero_data from "@/lib/features/heroes/hero_data";
+import Soldier from "@/components/soldiers/soldier";
+import WrapHero from "@/components/Heros/WrapHero";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    const { scale } = useSelector((state: RootState) => state.aov.settings);
+    const [nak, mur] = hero_data
+    const {
+        heroes,
+        heroIds,
+        addHero,
+        moveHeroSmoothly,
+        updateHeroPositions
+    } = useHeroesStore();
+    const [time, setTime] = useState(0);
+    const selectedHero = 'hero-1';
+    const mapWrapperRef = useRef<HTMLDivElement>(null);
+    const lastTimeRef = useRef<number>(0);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+    // Initialize heroes
+    useEffect(() => {
+        if (heroIds.length === 0) {
+            addHero(nak);
+            addHero(mur);
+        }
+    }, [addHero, heroIds.length]);
+    // Soldier movement
+    const soldierPos = positionAtTime(startPos, endPos, soldierSpeed, time);
+    // Animation loop for both soldier and heroes
+    useEffect(() => {
+        let animationId: number;
+
+        const tick = (now: number) => {
+            const delta = (now - lastTimeRef.current) / 1000;
+            lastTimeRef.current = now;
+            setTime(prev => prev + delta);
+            updateHeroPositions(); // Update hero positions each frame
+            animationId = requestAnimationFrame(tick);
+        };
+
+        animationId = requestAnimationFrame(tick);
+        return () => cancelAnimationFrame(animationId);
+    }, [updateHeroPositions]);
+    // Handle map click - SMOOTH MOVEMENT
+    const handleMapClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!selectedHero || !mapWrapperRef.current) return;
+
+        const rect = mapWrapperRef.current.getBoundingClientRect();
+        const target = {
+            x: (e.clientX - rect.left) / scale,
+            y: (e.clientY - rect.top) / scale
+        };
+
+        const hero = heroes[selectedHero];
+        if (!hero) return;
+
+        // Use the hero's speed or default to 150 if not set
+        moveHeroSmoothly(selectedHero, target, hero.speed || 150);
+    };
+
+
+
+    return (
+        <>
+            <AOVSettingsDropdown />
+            <div
+                ref={mapWrapperRef}
+                onClick={handleMapClick}
+                style={{ cursor: selectedHero ? 'crosshair' : 'default' }}
+            >
+                <MapWrapper scale={scale}>
+                    {heroIds.map((heroId) => {
+                        const hero = heroes[heroId];
+                        return (
+                            <WrapHero
+                                key={heroId}
+                                hero={hero}
+                            >
+                                <SvgPlayer
+                                    HeroComponent={hero.renderElement}
+                                    duration={0}
+                                    timings={hero.timings ?? {}}
+                                />
+                                <div className="text-white text-xs bg-black bg-opacity-50 p-1 rounded">
+                                    {hero.name} (Lv.{hero.level}) HP: {hero.hp}/{hero.maxHp}
+                                </div>
+                            </WrapHero>
+                        );
+                    })}
+                    <Soldier position={soldierPos} />
+                    <Terrain />
+                </MapWrapper>
+            </div>
+        </>
+    );
 }

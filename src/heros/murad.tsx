@@ -1,0 +1,168 @@
+"use client";
+import React from "react";
+
+export const MuradSVGInline = React.forwardRef<SVGSVGElement>((props, ref) => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="5972.089 -600.827 1457.252 1222.755"
+        width={1457.252}
+        height={1222.755}
+        ref={ref}
+        {...props}
+    >
+        <defs>
+            <radialGradient
+                gradientUnits="userSpaceOnUse"
+                cx={1247.15}
+                cy={744.206}
+                r={27.74}
+                id="gradient-1"
+            >
+                <stop offset="0" style={{ stopColor: "#bada55" }} />
+                <stop offset="1" style={{ stopColor: "#758d29" }} />
+            </radialGradient>
+        </defs>
+        <g
+            style={{}}
+            transform="matrix(12.274962425231934, 0, 0, 9.63428020477295, -8743.607421875, -6938.95947265625)"
+        >
+            <title>murad</title>
+            <g>
+                <title>body</title>
+                <ellipse
+                    style={{
+                        fill: "rgba(206, 218, 170, 0)",
+                        strokeWidth: 0,
+                        stroke: 'url("#gradient-1")',
+                    }}
+                    cx={1247.15}
+                    cy={744.206}
+                    rx={27.74}
+                    ry={27.321}
+                >
+                    <title>skill2</title>
+                    <animate
+                        attributeName="fill"
+                        values="rgb(80.784% 85.49% 66.667% / 0);rgb(100% 64.314% 12.549% / 0.50196);rgb(100% 64.314% 12.549% / 0.50196);rgb(100% 64.314% 12.549% / 0)"
+                        begin="7.52s"
+                        dur="3.26s"
+                        fill="freeze"
+                        keyTimes="0; 0.239141; 0.766011; 1"
+                    />
+                </ellipse>
+                <path
+                    style={{ stroke: "rgb(0, 0, 0)", fill: "rgb(54, 54, 54)" }}
+                    d="M 1245.898 732.805 C 1243.546 732.081 1241.629 737.142 1242.082 738.952 L 1244.469 744.918 C 1244.625 745.337 1246.212 742.368 1246.288 743.46 C 1246.386 744.858 1249.442 747.186 1249.098 742.695 C 1251.077 744.956 1252.964 735.066 1250.985 732.805 C 1250.168 732.261 1245.715 732.683 1245.898 732.805 Z"
+                />
+                <path
+                    style={{ stroke: "rgb(0, 0, 0)", strokeWidth: 0, fill: "rgb(61, 61, 61)" }}
+                    d="M 1243.169 725.575 L 1246.421 722.705 L 1250.184 722.769 C 1250.184 722.769 1251.015 721.175 1250.12 719.262 C 1249.532 718.005 1243.845 717.459 1241.611 720.981 C 1240.446 722.818 1241.071 723.475 1241.938 728.023"
+                />
+                <ellipse
+                    style={{
+                        strokeWidth: 0,
+                        stroke: "rgb(255, 240, 165)",
+                        fill: "rgb(255, 220, 1)",
+                    }}
+                    cx={1246.21}
+                    cy={726.136}
+                    rx={4.301}
+                    ry={5.201}
+                />
+                <path
+                    style={{ stroke: "rgb(0, 0, 0)", fill: "rgb(81, 81, 81)", strokeWidth: 0 }}
+                    d="M 1240.778 726.789 C 1245.757 735.005 1250.192 732.559 1251.017 725.51"
+                />
+                <path
+                    style={{ strokeWidth: 0, stroke: "rgb(0, 0, 0)", fill: "rgb(181, 0, 0)" }}
+                    d="M 1240.501 721.891 L 1250.781 720.942 L 1250.451 723.088 L 1240.667 723.873 L 1238.272 725.73 L 1237.281 724.203 L 1240.501 721.891 Z"
+                />
+                <animate
+                    attributeName="opacity"
+                    values="1;0.09;0.02;1"
+                    begin="0.03s"
+                    dur="1.72s"
+                    fill="freeze"
+                    keyTimes="0; 0.108554; 0.821149; 1"
+                />
+                <animate
+                    attributeName="opacity"
+                    values="1;0.03;0.02;1"
+                    begin="2.15s"
+                    dur="2s"
+                    fill="freeze"
+                    keyTimes="0; 0.13279; 0.85693; 1"
+                />
+            </g>
+            <g style={{ transformOrigin: "1251.88px 737.307px" }}>
+                <title>knite</title>
+                <path
+                    style={{
+                        fill: "rgb(255, 255, 255)",
+                        stroke: "rgb(99, 99, 99)",
+                        transformOrigin: "1247.62px 738.586px",
+                    }}
+                    d="M 1248.94 735.155 L 1248.31 729.148 L 1246.61 730.351 L 1247.1 735.738 L 1248.32 748.397 C 1248.32 748.397 1251.18 736.026 1248.96 735.151"
+                    transform="matrix(0.297038, 1.053773, -0.865241, 0.297038, 0.000005, -0.000009)"
+                />
+                <ellipse
+                    style={{
+                        strokeWidth: 0,
+                        stroke: "rgb(0, 0, 0)",
+                        fill: "rgb(51, 51, 51)",
+                        transformOrigin: "1253.36px 725.035px",
+                    }}
+                    cx={1251.33}
+                    cy={720.656}
+                    rx={2.11}
+                    ry={1.477}
+                    transform="matrix(-0.556831, -0.830626, -0.949273, 0.379844, -6.305622, 11.716144)"
+                >
+                    <title>handle</title>
+                </ellipse>
+                <animateTransform
+                    type="rotate"
+                    additive="sum"
+                    attributeName="transform"
+                    values="0;-50;0"
+                    begin="11.08s"
+                    dur="0.34s"
+                    fill="freeze"
+                    keyTimes="0; 0.525701; 1"
+                />
+            </g>
+            <animateTransform
+                type="translate"
+                additive="sum"
+                attributeName="transform"
+                values="0 0;25 -52;10 -52;63 -24;-20 -38;34 0;31 -59;0 0"
+                begin="0s"
+                dur="1.61s"
+                fill="freeze"
+                keyTimes="0; 0.10089; 0.238098; 0.451983; 0.669904; 0.778864; 0.879753; 1"
+            />
+            <animateTransform
+                type="translate"
+                additive="sum"
+                attributeName="transform"
+                values="0 0;-54 16;-43 6;-31 68;-25 -34;-6 43;-59 18;0 0"
+                begin="2.2s"
+                dur="1.55s"
+                fill="freeze"
+                keyTimes="0; 0.09049; 0.23931; 0.42978; 0.6143; 0.73335; 0.83454; 1"
+            />
+            <animateTransform
+                type="translate"
+                additive="sum"
+                attributeName="transform"
+                values="0 0;0 2;0 0"
+                begin="13.03s"
+                dur="0.92s"
+                fill="freeze"
+                keyTimes="0; 0.44498; 1"
+                repeatCount="indefinite"
+            />
+        </g>
+    </svg>
+));
+
