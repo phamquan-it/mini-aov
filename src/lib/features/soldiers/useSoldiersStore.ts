@@ -9,13 +9,16 @@ import { endPos, startPos } from "@/constants";
 export interface Soldier {
     id: string;
     position: Point;
-    speed: number; // units/second
+    speed: number;
     movement: {
         start: Point;
         end: Point;
         speed: number;
-        startTime: number; // ms từ performance.now()
+        startTime: number;
     };
+    team: 'ally' | 'enemy';
+    isAttacking: boolean; // Thêm trạng thái tấn công
+    targetId?: string; // ID của mục tiêu đang tấn công
 }
 
 interface SoldiersState {
@@ -24,8 +27,9 @@ interface SoldiersState {
     waveNumber: number;
     isSpawning: boolean;
     startAutoSpawn: () => void;
-    spawnWave: () => void;
+    spawnWave: (team: 'ally' | 'enemy') => void;
     updateSoldierPositions: () => void;
+    findNearestEnemy: (soldier: Soldier) => Soldier | null;
 }
 
 export const useSoldiersStore = create<SoldiersState>((set, get) => {
@@ -36,28 +40,54 @@ export const useSoldiersStore = create<SoldiersState>((set, get) => {
         animationFrameId = requestAnimationFrame(updateLoop);
     };
 
+    // Hàm tìm kẻ địch gần nhất
+    const findNearestEnemy = (soldier: Soldier): Soldier | null => {
+        const { soldiers, soldierIds } = get();
+        let nearestEnemy: Soldier | null = null;
+        let minDistance = Infinity;
+
+        for (const id of soldierIds) {
+            const potentialEnemy = soldiers[id];
+            if (potentialEnemy.team === soldier.team) continue;
+
+            const distance = Math.sqrt(
+                Math.pow(soldier.position.x - potentialEnemy.position.x, 2) + 
+                Math.pow(soldier.position.y - potentialEnemy.position.y, 2)
+            );
+
+            if (distance < minDistance) {
+                minDistance = distance;
+                nearestEnemy = potentialEnemy;
+            }
+        }
+
+        return minDistance <= 100 ? nearestEnemy : null;
+    };
+
     return {
         soldiers: {},
         soldierIds: [],
         waveNumber: 0,
         isSpawning: false,
+        findNearestEnemy,
 
         startAutoSpawn: () => {
             if (get().isSpawning) return;
             set({ isSpawning: true });
-            get().spawnWave();
+            get().spawnWave('ally');
+            get().spawnWave('enemy');
             updateLoop();
         },
 
-        spawnWave: () => {
-            const waveSize = 5; // số lính mỗi đợt
-            const spawnInterval = 2000; // ms giữa 2 lính
-            const startBase: Point = startPos;
-            const endPoint: Point = endPos;
+        spawnWave: (team: 'ally' | 'enemy') => {
+            const waveSize = 5;
+            const spawnInterval = 2000;
+            const startBase = team === 'ally' ? startPos : endPos;
+            const endPoint = team === 'ally' ? endPos : startPos;
 
             const spawnOne = (i: number) => {
                 const id = nanoid();
-                const speed = 50; // units/sec
+                const speed = 50;
                 const now = performance.now();
 
                 set(state => ({
@@ -72,7 +102,9 @@ export const useSoldiersStore = create<SoldiersState>((set, get) => {
                                 end: endPoint,
                                 speed,
                                 startTime: now
-                            }
+                            },
+                            team,
+                            isAttacking: false
                         }
                     },
                     soldierIds: [...state.soldierIds, id]
@@ -83,10 +115,9 @@ export const useSoldiersStore = create<SoldiersState>((set, get) => {
                 setTimeout(() => {
                     spawnOne(i);
                     if (i === waveSize - 1) {
-                        // Sau khi xong wave này, 5s sau spawn wave tiếp
                         setTimeout(() => {
                             set(state => ({ waveNumber: state.waveNumber + 1 }));
-                            get().spawnWave();
+                            get().spawnWave(team);
                         }, 90000);
                     }
                 }, i * spawnInterval);
@@ -97,23 +128,40 @@ export const useSoldiersStore = create<SoldiersState>((set, get) => {
             const now = performance.now();
             set(state => {
                 const updated: Record<string, Soldier> = {};
-                for (const id of state.soldierIds) {
-                    const s = state.soldiers[id];
+                const { soldiers, soldierIds } = state;
+
+                for (const id of soldierIds) {
+                    const s = soldiers[id];
                     if (!s.movement) continue;
 
-                    const elapsed = (now - s.movement.startTime) / 1000; // giây
-                    const newPos = positionAtTime(
-                        s.movement.start,
-                        s.movement.end,
-                        s.movement.speed,
-                        elapsed
-                    );
+                    const nearestEnemy = get().findNearestEnemy(s);
+                    let newPosition = s.position;
+                    let isAttacking = false;
+                    let targetId = undefined;
 
-                    updated[id] = { ...s, position: newPos };
+                    if (nearestEnemy) {
+                        isAttacking = true;
+                        targetId = nearestEnemy.id;
+                    } else {
+                        const elapsed = (now - s.movement.startTime) / 1000;
+                        newPosition = positionAtTime(
+                            s.movement.start,
+                            s.movement.end,
+                            s.movement.speed,
+                            elapsed
+                        );
+                    }
+
+                    updated[id] = { 
+                        ...s, 
+                        position: newPosition,
+                        isAttacking,
+                        targetId
+                    };
                 }
+
                 return { soldiers: { ...state.soldiers, ...updated } };
             });
         }
     };
 });
-
