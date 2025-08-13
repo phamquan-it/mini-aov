@@ -1,6 +1,6 @@
 // components/Soldier.tsx
 "use client";
-import { Soldier } from "@/lib/features/soldiers/Soldier";
+import { Soldier } from "@/lib/features/soldiers/useSoldiersStore";
 import React from "react";
 
 interface SoldierProps {
@@ -8,24 +8,11 @@ interface SoldierProps {
 }
 
 export default function SoldierDiv({ soldier }: SoldierProps) {
-    const { position, type, hp, maxHp, team } = soldier;
+    const { position } = soldier;
 
     // Màu thân lính theo team + type
-    const colorMap: Record<Soldier["team"], Record<Soldier["type"], string>> = {
-        ally: {
-            melee: "#4caf50",
-            ranged: "#2196f3",
-            siege: "#ff9800",
-        },
-        enemy: {
-            melee: "#e53935",
-            ranged: "#9c27b0",
-            siege: "#ff5722",
-        },
-    };
 
     const fillColor = 'blue';
-    const hpPercent = Math.max(0, hp / maxHp) * 100;
 
     return (
         <div
@@ -51,14 +38,8 @@ export default function SoldierDiv({ soldier }: SoldierProps) {
             >
                 <div
                     style={{
-                        width: `${hpPercent}%`,
                         height: "100%",
-                        backgroundColor:
-                            hpPercent > 50
-                                ? "#4caf50"
-                                : hpPercent > 25
-                                    ? "#ffeb3b"
-                                    : "#f44336",
+                        backgroundColor: fillColor,
                         borderRadius: 1,
                     }}
                 />
