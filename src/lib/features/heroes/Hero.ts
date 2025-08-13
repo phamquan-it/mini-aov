@@ -1,5 +1,5 @@
+import { Position } from "@/types";
 import { ReactNode } from "react";
-import { Position } from "./Position";
 
 export interface Hero {
     id: string;

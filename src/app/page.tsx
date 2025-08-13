@@ -12,12 +12,13 @@ import { RootState } from "@/lib/redux/store";
 import AOVSettingsDropdown from "@/components/AOVSettingsDropdown";
 import useHeroesStore from "@/lib/features/heroes/useHeroesStore";
 import hero_data from "@/lib/features/heroes/hero_data";
-import Soldier from "@/components/soldiers/soldier";
 import WrapHero from "@/components/Heros/WrapHero";
+import SoldiersWave from "@/components/soldiers/SoldiersWave";
+import { useSoldiersStore } from "@/lib/features/soldiers/useSoldiersStore";
 
 export default function Home() {
     const { scale } = useSelector((state: RootState) => state.aov.settings);
-    const [nak, mur] = hero_data
+    const [nak, mur] = hero_data;
     const {
         heroes,
         heroIds,
@@ -25,21 +26,25 @@ export default function Home() {
         moveHeroSmoothly,
         updateHeroPositions
     } = useHeroesStore();
+
+    const {
+        updateSoldierPositions,
+    } = useSoldiersStore();
+
     const [time, setTime] = useState(0);
     const selectedHero = 'hero-1';
     const mapWrapperRef = useRef<HTMLDivElement>(null);
     const lastTimeRef = useRef<number>(0);
 
-    // Initialize heroes
+    // Initialize heroes once
     useEffect(() => {
         if (heroIds.length === 0) {
             addHero(nak);
             addHero(mur);
         }
     }, [addHero, heroIds.length]);
-    // Soldier movement
-    const soldierPos = positionAtTime(startPos, endPos, soldierSpeed, time);
-    // Animation loop for both soldier and heroes
+
+    // Animation loop: update time and update hero/soldier positions
     useEffect(() => {
         let animationId: number;
 
@@ -47,14 +52,16 @@ export default function Home() {
             const delta = (now - lastTimeRef.current) / 1000;
             lastTimeRef.current = now;
             setTime(prev => prev + delta);
-            updateHeroPositions(); // Update hero positions each frame
+            updateHeroPositions();
+            updateSoldierPositions();
             animationId = requestAnimationFrame(tick);
         };
 
         animationId = requestAnimationFrame(tick);
         return () => cancelAnimationFrame(animationId);
-    }, [updateHeroPositions]);
-    // Handle map click - SMOOTH MOVEMENT
+    }, [updateHeroPositions, updateSoldierPositions]);
+
+    // Handle map click - smooth move selected hero
     const handleMapClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!selectedHero || !mapWrapperRef.current) return;
 
@@ -67,11 +74,8 @@ export default function Home() {
         const hero = heroes[selectedHero];
         if (!hero) return;
 
-        // Use the hero's speed or default to 150 if not set
-        moveHeroSmoothly(selectedHero, target, hero.speed || 150);
+        moveHeroSmoothly(selectedHero, target, hero.speed);
     };
-
-
 
     return (
         <>
@@ -82,13 +86,11 @@ export default function Home() {
                 style={{ cursor: selectedHero ? 'crosshair' : 'default' }}
             >
                 <MapWrapper scale={scale}>
+                    {/* Render Heroes */}
                     {heroIds.map((heroId) => {
                         const hero = heroes[heroId];
                         return (
-                            <WrapHero
-                                key={heroId}
-                                hero={hero}
-                            >
+                            <WrapHero key={heroId} hero={hero}>
                                 <SvgPlayer
                                     HeroComponent={hero.renderElement}
                                     duration={0}
@@ -100,10 +102,11 @@ export default function Home() {
                             </WrapHero>
                         );
                     })}
-                    <Soldier position={soldierPos} />
                     <Terrain />
+                    <SoldiersWave />
                 </MapWrapper>
             </div>
         </>
     );
 }
+

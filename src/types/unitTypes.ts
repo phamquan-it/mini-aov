@@ -1,3 +1,5 @@
+import { Hero } from "@/lib/features/heroes/Hero";
+
 // types/unitTypes.ts
 export type UnitType = 'soldier' | 'hero' | 'building';
 
@@ -20,13 +22,6 @@ export interface UnitBase {
 export interface Soldier extends UnitBase {
     type: 'soldier';
     attackDamage: number;
-}
-
-export interface Hero extends UnitBase {
-    type: 'hero';
-    abilities: string[];
-    mana: number;
-    maxMana: number;
 }
 
 export type Unit = Soldier | Hero;

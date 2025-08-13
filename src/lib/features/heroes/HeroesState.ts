@@ -1,5 +1,5 @@
+import { Position } from "@/types";
 import { Hero } from "./Hero";
-import { Position } from "./Position";
 
 export interface HeroesState {
     heroes: Record<string, Hero>;
